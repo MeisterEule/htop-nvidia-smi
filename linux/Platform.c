@@ -50,6 +50,8 @@ in the source distribution for its full text.
 #include "SysArchMeter.h"
 #include "TasksMeter.h"
 #include "UptimeMeter.h"
+#include "GPUMemoryMeter.h"
+#include "GPUUtilMeter.h"
 #include "XUtils.h"
 #include "linux/IOPriority.h"
 #include "linux/IOPriorityPanel.h"
@@ -222,6 +224,8 @@ const MeterClass* const Platform_meterTypes[] = {
    &HugePageMeter_class,
    &TasksMeter_class,
    &UptimeMeter_class,
+   &GPUMemoryMeter_class,
+   &GPUUtilMeter_class,
    &BatteryMeter_class,
    &HostnameMeter_class,
    &AllCPUsMeter_class,
@@ -352,6 +356,39 @@ double Platform_setCPUValues(Meter* this, unsigned int cpu) {
 #endif
 
    return percent;
+}
+
+void Platform_initGPU () {
+   if (!NVML_INITIALIZED) Nvml_Init();
+}
+
+void Platform_setGPUMemoryValues (Meter *this) {
+   if (NVML_INITIALIZED) {
+      double kb_used, kb_free, kb_total;
+      Nvml_getMemoryInfo (&kb_used, &kb_free, &kb_total);
+
+      this->values[GPUMEM_METER_USED] = kb_used;
+      this->values[GPUMEM_METER_FREE] = kb_free;
+      this->curItems = GPUMEM_METER_FREE;
+      this->total = kb_total;
+   } else {
+      this->values[GPUMEM_METER_USED] = NAN;
+      this->values[GPUMEM_METER_FREE] = NAN;
+      this->total = NAN;
+   }
+}
+
+void Platform_setGPUUtilizationValues (Meter *this) {
+   if (NVML_INITIALIZED) {
+      double percent;
+      Nvml_getKernelUtilization (&percent);
+      this->values[GPUUTIL_METER_ACTIVE] = percent;
+      this->curItems = GPUUTIL_METER_ACTIVE;
+      this->total = 100.0;
+   } else {
+      this->values[GPUUTIL_METER_ACTIVE] = NAN;
+      this->total = NAN;
+   }
 }
 
 void Platform_setMemoryValues(Meter* this) {
