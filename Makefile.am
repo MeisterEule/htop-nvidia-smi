@@ -89,8 +89,6 @@ myhtopsources = \
 	TasksMeter.c \
 	TraceScreen.c \
 	UptimeMeter.c \
-        GPUMemoryMeter.c \
-        GPUUtilMeter.c \
 	UsersTable.c \
 	Vector.c \
 	XUtils.c
@@ -162,8 +160,6 @@ myhtopheaders = \
 	TasksMeter.h \
 	TraceScreen.h \
 	UptimeMeter.h \
-	GPUMemoryMeter.h \
-	GPUUtilMeter.h \
 	UsersTable.h \
 	Vector.h \
 	XUtils.h
@@ -183,7 +179,6 @@ linux_platform_headers = \
 	linux/LinuxMachine.h \
 	linux/LinuxProcess.h \
 	linux/LinuxProcessTable.h \
-        linux/NvmlAPI.h \
 	linux/Platform.h \
 	linux/PressureStallMeter.h \
 	linux/ProcessField.h \
@@ -205,7 +200,6 @@ linux_platform_sources = \
 	linux/IOPriorityPanel.c \
 	linux/LibSensors.c \
 	linux/LinuxMachine.c \
-        linux/NvmlAPI.c \
 	linux/LinuxProcess.c \
 	linux/LinuxProcessTable.c \
 	linux/Platform.c \

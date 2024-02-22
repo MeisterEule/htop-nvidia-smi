@@ -21,7 +21,6 @@ in the source distribution for its full text.
 #include "Macros.h"
 #include "Meter.h"
 #include "NetworkIOMeter.h"
-#include "NvmlAPI.h"
 #include "Panel.h"
 #include "Process.h"
 #include "ProcessLocksScreen.h"
@@ -64,12 +63,6 @@ void Platform_getLoadAverage(double* one, double* five, double* fifteen);
 pid_t Platform_getMaxPid(void);
 
 double Platform_setCPUValues(Meter* this, unsigned int cpu);
-
-void Platform_initGPU();
-
-void Platform_setGPUMemoryValues (Meter *this);
-
-void Platform_setGPUUtilizationValues (Meter *this);
 
 void Platform_setMemoryValues(Meter* this);
 
