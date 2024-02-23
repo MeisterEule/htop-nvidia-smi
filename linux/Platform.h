@@ -69,7 +69,7 @@ void Platform_initGPU();
 
 void Platform_setGPUMemoryValues (Meter *this);
 
-void Platform_setGPUUtilizationValues (Meter *this);
+double Platform_setGPUUtilizationValues (Meter *this);
 
 void Platform_setMemoryValues(Meter* this);
 

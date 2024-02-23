@@ -51,7 +51,7 @@ in the source distribution for its full text.
 #include "TasksMeter.h"
 #include "UptimeMeter.h"
 #include "GPUMemoryMeter.h"
-#include "GPUUtilMeter.h"
+#include "GPUMeter.h"
 #include "XUtils.h"
 #include "linux/IOPriority.h"
 #include "linux/IOPriorityPanel.h"
@@ -225,7 +225,7 @@ const MeterClass* const Platform_meterTypes[] = {
    &TasksMeter_class,
    &UptimeMeter_class,
    &GPUMemoryMeter_class,
-   &GPUUtilMeter_class,
+   &LeftGPUs4Meter_class,
    &BatteryMeter_class,
    &HostnameMeter_class,
    &AllCPUsMeter_class,
@@ -378,16 +378,18 @@ void Platform_setGPUMemoryValues (Meter *this) {
    }
 }
 
-void Platform_setGPUUtilizationValues (Meter *this) {
+double Platform_setGPUUtilizationValues (Meter *this) {
    if (NVML_INITIALIZED) {
       double percent;
       Nvml_getKernelUtilization (&percent);
-      this->values[GPUUTIL_METER_ACTIVE] = percent;
-      this->curItems = GPUUTIL_METER_ACTIVE;
+      this->values[GPU_METER_ACTIVE] = percent;
+      this->curItems = GPU_METER_ITEMCOUNT;
       this->total = 100.0;
+      return percent;
    } else {
-      this->values[GPUUTIL_METER_ACTIVE] = NAN;
+      this->values[GPU_METER_ACTIVE] = NAN;
       this->total = NAN;
+      return NAN; 
    }
 }
 

@@ -90,7 +90,7 @@ myhtopsources = \
 	TraceScreen.c \
 	UptimeMeter.c \
         GPUMemoryMeter.c \
-        GPUUtilMeter.c \
+        GPUMeter.c \
 	UsersTable.c \
 	Vector.c \
 	XUtils.c
@@ -163,7 +163,7 @@ myhtopheaders = \
 	TraceScreen.h \
 	UptimeMeter.h \
 	GPUMemoryMeter.h \
-	GPUUtilMeter.h \
+	GPUMeter.h \
 	UsersTable.h \
 	Vector.h \
 	XUtils.h
