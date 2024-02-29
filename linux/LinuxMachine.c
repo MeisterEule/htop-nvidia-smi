@@ -127,6 +127,12 @@ static void LinuxMachine_updateCPUcount(LinuxMachine* this) {
    super->existingCPUs = currExisting;
 }
 
+static void LinuxMachine_initNvml(LinuxMachine *this) {
+   if (!NVML_INITIALIZED) Nvml_Init();
+   Machine *super = &this->super;
+   super->activeGPUs = Nvml_getDeviceCount();
+}
+
 static void LinuxMachine_scanMemoryInfo(LinuxMachine* this) {
    Machine* host = &this->super;
    memory_t availableMem = 0;
@@ -675,6 +681,8 @@ Machine* Machine_new(UsersTable* usersTable, uid_t userId) {
 
    // Initialize CPU count
    LinuxMachine_updateCPUcount(this);
+
+   LinuxMachine_initNvml(this);
 
    return super;
 }

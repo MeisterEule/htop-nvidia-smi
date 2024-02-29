@@ -27,4 +27,5 @@ extern int NVML_INITIALIZED;
 extern void Nvml_Init();
 extern void Nvml_getMemoryInfo (double *kb_used, double *kb_free, double *kb_total);
 extern void Nvml_getKernelUtilization (double *percent);
+extern int Nvml_getDeviceCount ();
 #endif

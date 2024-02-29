@@ -3,7 +3,7 @@
 #include "NvmlAPI.h"
 
 void (*nvmlInit)();
-void (*getNVMLDeviceCount)();
+void (*getNVMLDeviceCount)(unsigned int *ngpus);
 void (*getNVMLDeviceHandleByIndex) (const unsigned int index, nvmlDevice_t **handle);
 void (*getNVMLMemoryInfo) (nvmlDevice_t *device_handle, nvml_memory_t *memory);
 void (*getNVMLKernelUtilization) (nvmlDevice_t *device_handle, nvml_util_t *util);
@@ -29,6 +29,12 @@ void Nvml_Init () {
    *(void**)(&getNVMLKernelUtilization) = dlsym(nvml_solib, "nvmlDeviceGetUtilizationRates");
 
    NVML_INITIALIZED = 1;
+}
+
+int Nvml_getDeviceCount () {
+   int ngpus;
+   getNVMLDeviceCount(&ngpus);
+   return ngpus;
 }
 
 void Nvml_getMemoryInfo (double *kb_used, double *kb_free, double *kb_total) {

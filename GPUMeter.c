@@ -43,7 +43,8 @@ static void GPUMeterCommonInit (Meter *this, int ncol) {
    GPUMeterData *data = this->meterData;
    if (!data) {
       data = this->meterData = xMalloc(sizeof(GPUMeterData));
-      data->ngpus = 1;
+      Machine *host = this->host;
+      data->ngpus = host->activeGPUs;
       data->meters = xCalloc(data->ngpus, sizeof(Meter*));
    }
 
