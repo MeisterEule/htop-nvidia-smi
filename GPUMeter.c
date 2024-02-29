@@ -173,6 +173,25 @@ const MeterClass GPUMeter_class = {
 
 };
 
+const MeterClass AllGPUs4Meter_class = {
+   .super = {
+      .extends = Class(Meter),
+      .delete = Meter_delete,
+   },
+   .updateValues = AllGPUsMeter_updateValues,
+   .defaultMode = CUSTOM_METERMODE,
+   .isMultiColumn = true,
+   .total = 100.0,
+   .attributes = GPUMeter_attributes,
+   .name = "AllGPUs4",
+   .uiName = "GPUs (1-X)",
+   .caption = "GPU Util",
+   .draw = QuadColGPUsMeter_draw,
+   .init = QuadColGPUsMeter_init,
+   .updateMode = QuadColGPUsMeter_updateMode,
+   .done = AllGPUsMeter_done
+};
+
 const MeterClass LeftGPUs4Meter_class = {
    .super = {
       .extends = Class(Meter),

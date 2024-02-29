@@ -226,6 +226,7 @@ const MeterClass* const Platform_meterTypes[] = {
    &UptimeMeter_class,
    &GPUMemoryMeter_class,
    &LeftGPUs4Meter_class,
+   &AllGPUs4Meter_class,
    &BatteryMeter_class,
    &HostnameMeter_class,
    &AllCPUsMeter_class,

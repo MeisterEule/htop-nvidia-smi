@@ -15,6 +15,7 @@ typedef enum {
 } GPUMeterValues;
 
 extern const MeterClass GPUMeter_class;
+extern const MeterClass AllGPUs4Meter_class;
 extern const MeterClass LeftGPUs4Meter_class;
 
 #endif
