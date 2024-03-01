@@ -224,7 +224,7 @@ const MeterClass* const Platform_meterTypes[] = {
    &HugePageMeter_class,
    &TasksMeter_class,
    &UptimeMeter_class,
-   &GPUMemoryMeter_class,
+   &AllGPUsMemory4Meter_class,
    &LeftGPUs4Meter_class,
    &AllGPUs4Meter_class,
    &BatteryMeter_class,

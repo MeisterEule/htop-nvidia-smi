@@ -44,6 +44,98 @@ static const int GPUMemoryMeter_attributes[] = {
    MEMORY_USED
 };
 
+typedef struct GPUMemoryMeterData_ {
+   unsigned int ngpus;
+   Meter **meters;
+} GPUMemoryMeterData;
+
+static void AllGPUsMemoryMeter_getRange(const Meter* this, int* start, int* count) {
+   const GPUMemoryMeterData* data = this->meterData;
+   unsigned int ngpus = data->ngpus;
+   switch (Meter_name(this)[0]) {
+      default:
+      case 'A': // All
+         *start = 0;
+         *count = ngpus;
+         break;
+      case 'L': // First Half
+         *start = 0;
+         *count = (ngpus + 1) / 2;
+         break;
+      case 'R': // Second Half
+         *start = (ngpus + 1) / 2;
+         *count = ngpus / 2;
+         break;
+   }
+}
+
+static void GPUMemoryMeterCommonInit (Meter *this, int ncol) {
+   GPUMemoryMeterData *data = this->meterData;
+   if (!data) {
+      data = this->meterData = xMalloc(sizeof(GPUMemoryMeterData));
+      Machine *host = this->host; 
+      data->ngpus = host->activeGPUs;
+      data->meters = xCalloc(data->ngpus, sizeof(Meter*));
+   }
+
+   Meter **meters = data->meters;
+   int start, count;
+   AllGPUsMemoryMeter_getRange(this, &start, &count);
+   for (int i = 0; i < data->ngpus; i++) {
+      if (!meters[i]) {
+         meters[i] = Meter_new(this->host, i + 1, (const MeterClass*)Class(GPUMemoryMeter));
+      }
+      Meter_init(meters[i]);
+   }
+
+   if (this->mode == 0)
+      this->mode = BAR_METERMODE;
+
+   int h = Meter_modes[this->mode]->h;
+   this->h = h * ((count + ncol - 1) / ncol);
+}
+
+static void GPUMemoryMeterCommonDraw(Meter* this, int x, int y, int w, int ncol) {
+   GPUMemoryMeterData* data = this->meterData;
+   Meter** meters = data->meters;
+   int start, count;
+   AllGPUsMemoryMeter_getRange(this, &start, &count);
+   int colwidth = (w - ncol) / ncol + 1;
+   int diff = (w - (colwidth * ncol));
+   int nrows = (count + ncol - 1) / ncol;
+   for (int i = 0; i < count; i++) {
+      int d = (i / nrows) > diff ? diff : (i / nrows); // dynamic spacer
+      int xpos = x + ((i / nrows) * colwidth) + d;
+      int ypos = y + ((i % nrows) * meters[0]->h);
+      meters[i]->draw(meters[i], xpos, ypos, colwidth);
+   }
+}
+
+static void GPUMemoryMeterCommonUpdateMode(Meter* this, int mode, int ncol) {
+   GPUMemoryMeterData* data = this->meterData;
+   Meter** meters = data->meters;
+   this->mode = mode;
+   int h = Meter_modes[mode]->h;
+   int start, count;
+   AllGPUsMemoryMeter_getRange(this, &start, &count);
+   for (int i = 0; i < count; i++) {
+      Meter_setMode(meters[i], mode);
+   }
+   this->h = h * ((count + ncol - 1) / ncol);
+}
+
+static void QuadColGPUsMemoryMeter_init(Meter *this) {
+   GPUMemoryMeterCommonInit(this, 4);
+}
+
+static void QuadColGPUsMemoryMeter_draw (Meter *this, int x, int y, int w) {
+   GPUMemoryMeterCommonDraw(this, x, y, w, 4);
+}
+
+static void QuadColGPUsMemoryMeter_updateMode (Meter *this, int mode) {
+   GPUMemoryMeterCommonUpdateMode(this, mode, 4);
+}
+
 static void GPUMemoryMeter_updateValues(Meter* this) {
    Platform_setGPUMemoryValues (this);
    char *buffer = this->txtBuffer;
@@ -56,6 +148,16 @@ static void GPUMemoryMeter_updateValues(Meter* this) {
    Meter_humanUnit(buffer, this->total, size);
 }
 
+static void AllGPUsMemory4Meter_updateValues (Meter *this) {
+   GPUMemoryMeterData *data = this->meterData;
+   Meter **meters = data->meters;
+   int start, count;
+   AllGPUsMemoryMeter_getRange(this, &start, &count);
+   for (int i = 0; i < count; i++) {
+      GPUMemoryMeter_updateValues (meters[i]);  
+   }
+}
+
 static void GPUMemoryTextMeter_updateValues (Meter *this) {
    double kb_used, kb_free, kb_total;
 
@@ -65,6 +167,23 @@ static void GPUMemoryTextMeter_updateValues (Meter *this) {
 
 static void GPUMemoryMeter_display (const Object *cast, RichString *out) {
 }
+
+const MeterClass AllGPUsMemory4Meter_class = {
+   .super = {
+      .extends = Class(Meter),
+      .delete = Meter_delete,
+   },
+   .updateValues = AllGPUsMemory4Meter_updateValues,
+   .defaultMode = BAR_METERMODE,
+   .maxItems = GPUMEM_METER_ITEMCOUNT,
+   .total = 100.0,
+   .attributes = GPUMemoryMeter_attributes,
+   .init = QuadColGPUsMemoryMeter_init,
+   .name = "GPU4Mem",
+   .caption = "GPU Mem",
+   .draw = QuadColGPUsMemoryMeter_draw,
+   .updateMode = QuadColGPUsMemoryMeter_updateMode,
+};
 
 const MeterClass GPUMemoryMeter_class = {
    .super = {
