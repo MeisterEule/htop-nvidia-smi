@@ -52,6 +52,7 @@ in the source distribution for its full text.
 #include "linux/LinuxMachine.h"
 #include "linux/LinuxProcess.h"
 #include "linux/Platform.h" // needed for GNU/hurd to get PATH_MAX  // IWYU pragma: keep
+#include "linux/gpu_pids.h"
 
 #if defined(MAJOR_IN_MKDEV)
 #include <sys/mkdev.h>
@@ -1446,6 +1447,7 @@ static bool LinuxProcessTable_recurseProcTree(LinuxProcessTable* this, openat_ar
 
       Process_setThreadGroup(proc, parent ? Process_getPid(parent) : pid);
       proc->isUserlandThread = Process_getPid(proc) != Process_getThreadGroup(proc);
+      proc->isRunningOnGPU = is_gpu_pid (pid);
 
       LinuxProcessTable_recurseProcTree(this, procFd, lhost, "task", proc);
 
@@ -1696,5 +1698,9 @@ void ProcessTable_goThroughEntries(ProcessTable* super) {
    openat_arg_t rootFd = "";
 #endif
 
+   gather_gpu_pids(); 
+
    LinuxProcessTable_recurseProcTree(this, rootFd, lhost, PROCDIR, NULL);
+
+   free_gpu_pids();
 }

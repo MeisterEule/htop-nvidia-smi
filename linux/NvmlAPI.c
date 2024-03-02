@@ -7,6 +7,7 @@ void (*getNVMLDeviceCount)(unsigned int *ngpus);
 void (*getNVMLDeviceHandleByIndex) (const unsigned int index, nvmlDevice_t **handle);
 void (*getNVMLMemoryInfo) (nvmlDevice_t *device_handle, nvml_memory_t *memory);
 void (*getNVMLKernelUtilization) (nvmlDevice_t *device_handle, nvml_util_t *util);
+void (*getNVMLRunningProcesses) (nvmlDevice_t *device_handle, unsigned int *info_count, nvml_process_info_t *infos);
 
 nvmlDevice_t *nvml_device_handle;
 
@@ -27,6 +28,8 @@ void Nvml_Init () {
    
    *(void**)(&getNVMLMemoryInfo) = dlsym(nvml_solib, "nvmlDeviceGetMemoryInfo");
    *(void**)(&getNVMLKernelUtilization) = dlsym(nvml_solib, "nvmlDeviceGetUtilizationRates");
+
+   *(void**)(&getNVMLRunningProcesses) = dlsym(nvml_solib, "nvmlDeviceGetComputeRunningProcesses_v3");
 
    NVML_INITIALIZED = 1;
 }
@@ -49,4 +52,8 @@ void Nvml_getKernelUtilization (double *percent) {
    nvml_util_t util;
    getNVMLKernelUtilization (nvml_device_handle, &util);
    *percent = util.gpu;
+}
+
+void Nvml_GetRunningProcesses (int *n_processes, nvml_process_info_t *infos) {
+   getNVMLRunningProcesses (nvml_device_handle, n_processes, infos);
 }

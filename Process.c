@@ -296,7 +296,14 @@ void Process_makeCommandStr(Process* this, const Settings* settings) {
          }                                                                                    \
       } while (0)
 
-   const int baseAttr = Process_isThread(this) ? CRT_colors[PROCESS_THREAD_BASENAME] : CRT_colors[PROCESS_BASENAME];
+   int baseAttr;
+   if (Process_isThread(this)) {
+      baseAttr = CRT_colors[PROCESS_THREAD_BASENAME];
+   } else if (this->isRunningOnGPU) {
+      baseAttr = CRT_colors[ZFS_MFU];
+   } else {
+      baseAttr = CRT_colors[PROCESS_BASENAME];
+   }
    const int commAttr = Process_isThread(this) ? CRT_colors[PROCESS_THREAD_COMM] : CRT_colors[PROCESS_COMM];
    const int delExeAttr = CRT_colors[FAILED_READ];
    const int delLibAttr = CRT_colors[PROCESS_TAG];
@@ -557,6 +564,9 @@ void Process_writeField(const Process* this, RichString* str, RowField field) {
       if (settings->highlightThreads && Process_isThread(this)) {
          attr = CRT_colors[PROCESS_THREAD];
          baseattr = CRT_colors[PROCESS_THREAD_BASENAME];
+      } else if (this->isRunningOnGPU) {
+         attr = CRT_colors[ZFS_MFU];
+         baseattr = CRT_colors[ZFS_MFU];
       }
       const ScreenSettings* ss = settings->ss;
       if (!ss->treeView || super->indent == 0) {

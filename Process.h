@@ -89,6 +89,8 @@ typedef struct Process_ {
    /* This process is running inside a container */
    bool isRunningInContainer;
 
+   bool isRunningOnGPU;
+
    /* Controlling terminal identifier of the process */
    unsigned long int tty_nr;
 

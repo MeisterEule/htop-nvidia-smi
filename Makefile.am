@@ -184,6 +184,7 @@ linux_platform_headers = \
 	linux/LinuxProcess.h \
 	linux/LinuxProcessTable.h \
         linux/NvmlAPI.h \
+        lniux/gpu_pids.h \
 	linux/Platform.h \
 	linux/PressureStallMeter.h \
 	linux/ProcessField.h \
@@ -206,6 +207,7 @@ linux_platform_sources = \
 	linux/LibSensors.c \
 	linux/LinuxMachine.c \
         linux/NvmlAPI.c \
+        linux/gpu_pids.c \
 	linux/LinuxProcess.c \
 	linux/LinuxProcessTable.c \
 	linux/Platform.c \
