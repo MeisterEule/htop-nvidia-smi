@@ -300,7 +300,7 @@ void Process_makeCommandStr(Process* this, const Settings* settings) {
    if (Process_isThread(this)) {
       baseAttr = CRT_colors[PROCESS_THREAD_BASENAME];
    } else if (this->isRunningOnGPU) {
-      baseAttr = CRT_colors[ZFS_MFU];
+      baseAttr = CRT_colors[PROCESS_GPU];
    } else {
       baseAttr = CRT_colors[PROCESS_BASENAME];
    }
@@ -565,8 +565,8 @@ void Process_writeField(const Process* this, RichString* str, RowField field) {
          attr = CRT_colors[PROCESS_THREAD];
          baseattr = CRT_colors[PROCESS_THREAD_BASENAME];
       } else if (this->isRunningOnGPU) {
-         attr = CRT_colors[ZFS_MFU];
-         baseattr = CRT_colors[ZFS_MFU];
+         attr = CRT_colors[PROCESS_GPU];
+         baseattr = CRT_colors[PROCESS_GPU];
       }
       const ScreenSettings* ss = settings->ss;
       if (!ss->treeView || super->indent == 0) {
